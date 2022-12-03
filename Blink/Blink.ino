@@ -55,7 +55,7 @@ float temperature;
 // float humidity;
 // float pressure;
 
-// Timer variables (send new readings every three minutes)
+// Timer variables (send new readings every thirt seconds)
 unsigned long sendDataPrevMillis = 0;
 unsigned long timerDelay = 30000;
 
@@ -68,11 +68,12 @@ int sensorPin = 35;
 // Initialize WiFi
 void initWiFi() {
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  Serial.print("Connecting to WiFi ..");
+  Serial.println("Connecting to WiFi ..");
   while (WiFi.status() != WL_CONNECTED) {
     Serial.print('.');
     delay(1000);
   }
+  Serial.print("\nConnected Successfully\nIp is: ");
   Serial.println(WiFi.localIP());
   Serial.println();
 }
