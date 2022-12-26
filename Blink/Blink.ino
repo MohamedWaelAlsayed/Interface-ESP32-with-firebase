@@ -1,10 +1,11 @@
 #include <Arduino.h>
-// #include <WiFi.h>
+#include <WiFi.h>
 #include <Firebase_ESP_Client.h>
 #include <Wire.h>
-// #include <Adafruit_Sensor.h>
-// #include <Adafruit_BME280.h>
 #include "time.h"
+#include <OneWire.h>
+#include <DallasTemperature.h>
+
 
 // Provide the token generation process info.
 #include "addons/TokenHelper.h"
@@ -38,8 +39,16 @@ String databasePath;
 // Database child nodes
 String tempPath = "/temperature";
 String humPath = "/humidity";
-String presPath = "/pressure";
 String timePath = "/timestamp";
+
+// Ds18B20 Temperature sensor
+// GPIO where the DS18B20 is connected to
+const int oneWireBus = 4;     
+// Setup a oneWire instance to communicate with any OneWire devices
+OneWire oneWire(oneWireBus);
+
+// Pass our oneWire reference to Dallas Temperature sensor 
+DallasTemperature sensors(&oneWire);
 
 // Parent Node (to be updated in every loop)
 String parentPath;
@@ -47,20 +56,20 @@ String parentPath;
 int timestamp;
 FirebaseJson json;
 
+// Network time Protocl Server
 const char* ntpServer = "pool.ntp.org";
 
-// BME280 sensor
-// Adafruit_BME280 bme; // I2C
+// Capacitive Soil Moisture Sensor Temperature sensor
+// GPIO where the Capacitive Soil Moisture Sensor is connected to
+int sensorPin = 33;
+
 float temperature;
-// float humidity;
-// float pressure;
+float humidity;
 
 // Timer variables (send new readings every thirt seconds)
 unsigned long sendDataPrevMillis = 0;
 unsigned long timerDelay = 30000;
 
-
-int sensorPin = 35;
 
 
 
@@ -93,8 +102,13 @@ unsigned long getTime() {
 void setup(){
   Serial.begin(115200);
 
+ // Start the DS18B20 sensor
+  sensors.begin();
 
+//start Wifi
   initWiFi();
+
+//Configure times   
   configTime(0, 0, ntpServer);
 
   // Assign the api key (required)
@@ -147,11 +161,12 @@ void loop(){
 
     parentPath= databasePath + "/" + String(timestamp);
 
-    temperature = analogRead(sensorPin);
+    humidity = analogRead(sensorPin);
+    humidity = (humidity/4095)*100;
+    temperature = sensors.getTempCByIndex(0);
 
     json.set(tempPath.c_str(), String(temperature));
-    // json.set(humPath.c_str(), String(bme.readHumidity()));
-    // json.set(presPath.c_str(), String(bme.readPressure()/100.0F));
+    json.set(humPath.c_str(), String(humidity));
     json.set(timePath, String(timestamp));
     Serial.printf("Set json... %s\n", Firebase.RTDB.setJSON(&fbdo, parentPath.c_str(), &json) ? "ok" : fbdo.errorReason().c_str());
     
