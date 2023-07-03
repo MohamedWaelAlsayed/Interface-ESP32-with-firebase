@@ -7,7 +7,7 @@ Rice diseases are various and threaten the economy and there are 2 most common d
 
 • IOT With Firebase
 
-This function is about using ESP32 Node MCU with Two sensors moisture and temperature, Start taking readings from the farm and saving them into RTDB (Real-time Data Base) provisioned with autoscaling and no latency, and sending them to Mobile Application in Real-Time to Monitor readings change over time (monitor factors that may increase diseases) and Show number of readings.
+This function is about using ESP32 Node MCU with Two sensors moisture and temperature, Start taking readings from the farm and saving them into RTDB (Real-time Data Base) in Firebase provisioned with autoscaling and no latency, and sending them to Mobile Application in Real-Time to Monitor readings change over time (monitor factors that may increase diseases) and Show number of readings.
 
 Mobile Application code: https://github.com/MohamedWaelAlsayed/RiceUp_Flutter-oldversion
 
